@@ -72,11 +72,13 @@ class Player extends FlxSprite {
         	if (_gamepad.pressed(XboxButtonID.DPAD_LEFT)) {
 				velocity.x = -maxVelocity.x/16;
 				facing = FlxObject.LEFT;
+				if(isTouching(FlxObject.FLOOR)) animation.play("lr");
         	}
 
         	if (_gamepad.pressed(XboxButtonID.DPAD_RIGHT)) {
 				velocity.x = maxVelocity.x/16;
 				facing = FlxObject.RIGHT;
+				if(isTouching(FlxObject.FLOOR)) animation.play("lr");
         	}
         }
 
