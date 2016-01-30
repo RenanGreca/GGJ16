@@ -20,14 +20,20 @@ class PlayState extends FlxState
 	var level:FlxTilemap;
 	var mapData:String;
 	var mapTilePath:String;
+
+	var box:FlxTilemap;
+	var platforms:FlxTilemap;
+
+	var player:Player;
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
 	override public function create():Void
 	{
-		super.create();
+
 		
+
 		//level = new FlxTilemap();
 		//mapData = Assets.getText("assets/data/tilemap/tilemap_Box.csv");
 		//mapTilePath = "assets/data/tilemap/tileset.png";
@@ -43,6 +49,7 @@ class PlayState extends FlxState
 		for (layer in tiledLevel.layers)
 		{
 			trace(layer.name);
+			
 			var layerData:String = layer.csvData;
 			var tilesheetPath:String = "assets/data/tilemap/tileset.png";
 			
@@ -52,8 +59,20 @@ class PlayState extends FlxState
 			level.heightInTiles = tiledLevel.height;
 			
 			level.loadMap(layerData, tilesheetPath, tiledLevel.tileWidth, tiledLevel.tileHeight, FlxTilemap.OFF, 1);
+			level.x = -256;
 			add(level);
+			if (layer.name == "Box") {
+				box = level;
+			}
+			if (layer.name == "Platforms") {
+				platforms = level;
+			}
 		}
+		
+		player = new Player(110, 500);
+		add(player);
+
+		super.create();
 	}
 	
 	/**
@@ -71,5 +90,7 @@ class PlayState extends FlxState
 	override public function update():Void
 	{
 		super.update();
+		FlxG.collide(player, box);
+		FlxG.collide(player, platforms);
 	}	
 }
