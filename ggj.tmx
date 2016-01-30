@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="16" height="10" tilewidth="64" tileheight="64" nextobjectid="1">
+ <tileset firstgid="1" name="tileset" tilewidth="64" tileheight="64">
+  <image source="../../../Downloads/ExemploTiles/ExemploTiles/Mapa/tileset.png" width="1280" height="832"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2DgAAACgAAB
+  </data>
+ </layer>
+ <layer name="Platforms" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJwLZWBgCEPCoWh8fDgciB0ZUAE6Hx9wpqH+aCCOAuJYNHmYeBSN7aeWfmT3ovtlMLjfDohtkTA6Hxuuh2IHIAYAytMTbg==
+  </data>
+ </layer>
+ <layer name="Objects" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYKAuuEIltZfQaGRwnQQ7BgPA5ofBDg5DaWS34/KHLRQj84kFAAyCCBQ=
+  </data>
+ </layer>
+ <layer name="Details" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBh6YMdAO2AEgG10sgcAlx8Bbw==
+  </data>
+ </layer>
+</map>
