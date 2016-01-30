@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="32" tileheight="32" nextobjectid="6">
+ <tileset firstgid="1" name="test" tilewidth="32" tileheight="32" tilecount="1296" columns="36">
+  <image source="../../../../Users/Oelson/Pictures/802332842_62306_17416067936254271341.jpg" width="1181" height="1181"/>
+  <terraintypes>
+   <terrain name="plat" tile="-1"/>
+  </terraintypes>
+  <tile id="38" terrain=",,,0"/>
+  <tile id="39" terrain=",,0,0"/>
+  <tile id="40" terrain=",,0,0"/>
+  <tile id="41" terrain=",,0,0"/>
+  <tile id="42" terrain=",,0,"/>
+  <tile id="74" terrain=",0,,0"/>
+  <tile id="75" terrain="0,0,0,0"/>
+  <tile id="76" terrain="0,0,0,0"/>
+  <tile id="77" terrain="0,0,0,0"/>
+  <tile id="78" terrain="0,,0,"/>
+  <tile id="110" terrain=",0,,"/>
+  <tile id="111" terrain="0,0,,"/>
+  <tile id="112" terrain="0,0,,"/>
+  <tile id="113" terrain="0,0,,"/>
+  <tile id="114" terrain="0,,,"/>
+ </tileset>
+ <layer name="Camada de Tiles 1" width="10" height="10">
+  <data encoding="csv">
+41,41,41,41,41,41,41,41,41,41,
+41,73,73,73,73,73,73,73,73,41,
+41,73,73,73,73,73,73,73,73,41,
+41,73,73,73,73,73,73,73,73,41,
+41,73,73,73,73,73,73,73,73,41,
+41,73,73,73,73,73,73,73,73,41,
+41,73,73,147,145,6,6,6,73,41,
+41,73,73,73,73,73,73,73,73,41,
+41,73,73,73,73,73,73,73,73,41,
+41,41,41,41,41,41,41,41,41,41
+</data>
+ </layer>
+ <objectgroup name="Camada de Objetos 1">
+  <object id="4" x="212" y="171"/>
+ </objectgroup>
+</map>
