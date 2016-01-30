@@ -40,13 +40,13 @@ class Player extends FlxSprite {
 		if (FlxG.keys.pressed.LEFT) {
 			velocity.x = -maxVelocity.x/16;
 			facing = FlxObject.LEFT;
-			animation.play("lr");
+			if(isTouching(FlxObject.FLOOR)) animation.play("lr");
 		}
 
 		if (FlxG.keys.pressed.RIGHT) {
 			velocity.x = maxVelocity.x/16;
 			facing = FlxObject.RIGHT;
-			animation.play("lr");
+			if(isTouching(FlxObject.FLOOR)) animation.play("lr");
 		}
 
 		if (FlxG.keys.anyPressed(["UP", "SPACE"])) {
