@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -7,7 +8,7 @@ import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxMath;
-import flixel.util.FlxSpriteUtil;
+import flixel.util.FlxTimer;
 
 /**
  * A FlxState which can be used for the game's menu.
@@ -19,31 +20,42 @@ class MenuState extends FlxState
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
+	
+	var cutscenes:Array<String>;
+	var cutNum:Int = 0;
+	
 	override public function create():Void
 	{
-		bg = new FlxSprite();
-		bg.loadGraphic(AssetPaths.title_screen__png, true, 768, 640);
-		add(bg);
-
+		cutscenes = [AssetPaths.cutscene__png, AssetPaths.cutscene2__png];
+		
 		super.create();
-
-		haxe.Timer.delay(fadeOutFirstImage, 1000);
+		
+		PlayCutscene();
 	}
-
-	function fadeOutFirstImage() {
-		FlxSpriteUtil.fadeOut(bg, 1);
-		haxe.Timer.delay(FadeInSecondImage, 1000);
+	
+	function PlayCutscene() 
+	{
+		trace('play');
+		var cutscene:FlxSprite = new FlxSprite(0, 0);
+		cutscene.loadGraphic(cutscenes[cutNum]);
+		cutscene.y += (FlxG.camera.height - cutscene.height) * .5;
+		add(cutscene);
+		FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
+		cutNum++;
+		
+		new FlxTimer(3, TimerOff);
+		//FlxG.camera.fade(FlxColor.BLACK, 1, true, function() {
+			//Flx
+		//});
 	}
-
-	function FadeInSecondImage() {
-		bg.loadGraphic(AssetPaths.game_start__png, true, 768, 640);
-		FlxSpriteUtil.fadeIn(bg, 1);
-		haxe.Timer.delay(GoToPlayState, 1000);
-	}
-
-	function GoToPlayState() {
-		FlxSpriteUtil.fadeOut(bg, 1);
-		FlxG.switchState(new PlayState());
+	
+	function TimerOff(timer:FlxTimer) 
+	{
+		FlxG.camera.fade(FlxColor.BLACK, 1, false, function()
+		{
+			if (cutNum < cutscenes.length) PlayCutscene();
+			else FlxG.switchState(new PlayState());
+		});
 	}
 	
 	/**

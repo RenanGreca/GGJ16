@@ -10,11 +10,13 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
+import flixel.group.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxMath;
+import flixel.util.FlxPoint;
 import haxe.io.Path;
 import openfl.Assets;
 
@@ -31,27 +33,18 @@ class PlayState extends FlxState
 
 	var player:Player;
 	var items:FlxGroup;
-	var spikes:TiledObject;
+	var doors:FlxTypedGroup<FlxSprite>;
+	var damage:FlxGroup;
 	
-	var tiledLevel:TiledMap ;
+	var tiledLevel:TiledMap;
 	
-	//private var _map:FlxOgmoLoader;
-	//private var _mWalls:FlxTilemap;
- 
+	var progress:FlxSprite;
+	
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
 	override public function create():Void
 	{
-
-		//level = new FlxTilemap();
-		//mapData = Assets.getText("assets/data/tilemap/tilemap_walls.csv");
-		//mapTilePath = "assets/data/tilemap/tileset.png";
-		//
-		//level.loadMap(mapData, mapTilePath, 64, 64);
-		//add(level);
-		//
-		
 		FlxG.mouse.visible = false;
 		
 		tiledLevel = new TiledMap("assets/data/tilemap/ggj.tmx");
@@ -68,7 +61,6 @@ class PlayState extends FlxState
 			level.widthInTiles = tiledLevel.width;
 			level.heightInTiles = tiledLevel.height;
 			level.loadMap(layerData, tilesheetPath, tiledLevel.tileWidth, tiledLevel.tileHeight, FlxTilemap.OFF, 1, 1, 1);
-			//level.x = -256;
 			add(level);
 			if (layer.name == "Walls") {
 				walls = level;
@@ -77,25 +69,32 @@ class PlayState extends FlxState
 		
 		BuildLevel();
 		
-		//_map = new FlxOgmoLoader(AssetPaths.UnsavedLevel__oel);
-		//_mWalls = _map.loadTilemap(AssetPaths.tileset__png, 64, 64, "Walls");
-		//_mWalls.setTileProperties(1, FlxObject.NONE);
-		//_mWalls.setTileProperties(2, FlxObject.ANY);
-		//add(_mWalls);
+		player = new Player(doors.members[1].x, 500);
+		SetPlayer();
 		
-		player = new Player(510, 500);
 		add(player);
 		FlxG.camera.setBounds(256, 0, tiledLevel.fullWidth-256, tiledLevel.fullHeight, true);
-		//FlxG.camera.setBounds(256, 0, 768, 640);
 		FlxG.camera.follow(player, FlxCamera.STYLE_PLATFORMER);
 		super.create();
+		
+		FlxG.camera.fade(FlxColor.BLACK, 1, true);
+	}
+	
+	function SetPlayer() 
+	{
+		player.x = doors.members[1].x + 10;
+		player.y = doors.members[1].y;
+		player.facing = FlxObject.RIGHT;
+		player.acceleration.y = player.gravity;
+		player.alive = true;
 	}
 	
 	function BuildLevel() 
 	{
 		items = new FlxGroup();
+		doors = new FlxTypedGroup();
+		damage = new FlxGroup();
 		trace(tiledLevel.properties);
-		//tra
 		for (group in tiledLevel.objectGroups)
 		{
 			for (o in group.objects)
@@ -109,15 +108,33 @@ class PlayState extends FlxState
 						item.animation.add('shine', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32], 8, true);
 						item.animation.play('shine');
 						items.add(item);
-						add(item);
+					
+					case "door":
+						var item:FlxSprite = new FlxSprite(o.x, o.y);
+						item.loadGraphic(AssetPaths.door__png, true, 64, 64);
+						item.animation.add('open', [1, 2, 3], 8);
+						doors.add(item);
 						
 					case "spikes":
-						trace("spikes");
-						spikes = o;
+						var item:FlxSprite = new FlxSprite(o.x, o.y + 15);
+						item.loadGraphic(AssetPaths.espinhos__png, false, 64, 64);
+						damage.add(item);
 				}
 			}
 		}
-		//add(items);
+		trace(FlxG.camera.width, FlxG.game.width, FlxG.width);
+		
+		progress = new FlxSprite(640, -64);
+		progress.scrollFactor.set(0, 0);
+		progress.loadGraphic(AssetPaths.barras__png, true, 384, 64);
+		progress.animation.randomFrame();
+		//progress.x = FlxG.width + (progress.frameWidth * .5);
+		trace(progress.x, progress.width, progress.frameWidth);
+		
+		add(progress);
+		add(items);
+		add(doors);
+		add(damage);
 	}
 	
 	/**
@@ -134,22 +151,40 @@ class PlayState extends FlxState
 	 */
 	override public function update():Void
 	{
-		//trace(player.x, player.y);
 		if (player.x < 210) FlxG.camera.setBounds(0, 0, 1024, 640, true);
-		if (FlxG.keys.pressed.C) {
-			player.x = 610;
-			player.y = 500;
-		}
+		if (FlxG.keys.justPressed.C) SetPlayer();
 
 		super.update();
 		FlxG.collide(player, walls);
 		FlxG.overlap(player, items, TouchItem);
-		//FlxG.overlap(player, spikes, TouchSpikes);
+		FlxG.overlap(player, damage, TouchDamage);
+		
+		if (player.animation.frameIndex == 5)
+			FlxG.overlap(player, doors, TouchDoor);
 	}	
+	
+	function TouchDoor(obj1:FlxSprite, obj2:FlxSprite) 
+	{
+		
+	}
+	
+	function TouchDamage(obj1:FlxSprite, obj2:FlxSprite)
+	{
+		if (player.alive)
+		{
+			trace('die1');
+			player.alive = false;
+			player.velocity.y = 0;
+			player.acceleration.y = 100;
+			player.velocity.x = 0;
+			player.animation.frameIndex = 1;
+			trace('die2');
+		}
+	}
 	
 	function TouchItem(obj1:FlxSprite, obj2:FlxSprite) 
 	{
-		remove(items.remove(obj2, true));
+		if (FlxG.pixelPerfectOverlap(obj1, obj2)) remove(items.remove(obj2, true));
 		trace(items.countDead(), items.countLiving());
 	}
 

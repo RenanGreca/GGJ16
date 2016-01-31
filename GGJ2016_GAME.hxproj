@@ -7,7 +7,7 @@
     <movie path="Project.xml" />
     <movie fps="60" />
     <movie width="768" />
-    <movie height="640" />
+    <movie height="724" />
     <movie version="1" />
     <movie minorVersion="0" />
     <movie platform="Lime" />

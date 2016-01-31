@@ -28,8 +28,8 @@ class Player extends FlxSprite {
 		animation.add("d", [5], 6, false);
 		animation.add("dead", [1], 6, false);
 
-		//setSize(8, 14);
-		//offset.set(4, 2);
+		setSize(32, 32);
+		offset.set(16, 31);
 
 		drag.x = drag.y = 1600;
 
@@ -37,6 +37,7 @@ class Player extends FlxSprite {
 	}
 
 	private function movement(): Void {
+		//trace('movement');
 
 		velocity.x = 0;
 		if (FlxG.keys.pressed.LEFT) {
@@ -193,7 +194,7 @@ class Player extends FlxSprite {
 	override public function update():Void
 	{
 
-		movement();
+		if(alive) movement();
 		super.update();
 	}	
 
