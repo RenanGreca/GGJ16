@@ -110,9 +110,9 @@ class TotemState extends FlxState
 				{
 					case "door":
 						var item:FlxSprite = new FlxSprite(o.x, o.y);
-						item.loadGraphic(AssetPaths.door__png, true, 64, 64);
-						item.animation.add('open', [3, 2, 1], 2, false);
-						item.animation.add('close', [1, 2, 3], 2, false);
+						item.loadGraphic(AssetPaths.gray_door__png, true, 64, 64);
+						item.animation.add('open', [2, 1, 0], 2, false);
+						item.animation.add('close', [0, 1, 2], 2, false);
 						if (o.custom.id.toLowerCase() == 'doorsecret') doorSecret = item;
 						if (o.custom.id.toLowerCase() == 'doorend') doorEnd = item;
 						if (o.custom.id.toLowerCase() == 'doorback') doorBack = item;
@@ -196,7 +196,6 @@ class TotemState extends FlxState
 		
 		if (doorBack.visible && obj2 == doorBack)
 		{
-			indexStage++;
 			FlxG.switchState(new PlayState(indexStage, coinsTotal));
 		}
 	}
