@@ -65,6 +65,13 @@ class PlayState extends FlxState
 	var info4:StageInfo = new StageInfo([1, 2, 3, 4, 5], 2, false);
 	var info5:StageInfo = new StageInfo([1, 2, 3, 4, 5], 1, true);
 	var info6:StageInfo = new StageInfo([1, 2, 3, 5, 6], 3, true);
+	
+	function new(indexStage:Int = 0, coinsTotal:Int = 0)
+	{
+		super();
+		this.indexStage = indexStage;
+		this.coinsGot = coinsTotal;
+	}
 
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -145,8 +152,8 @@ class PlayState extends FlxState
 					case "door":
 						var item:FlxSprite = new FlxSprite(o.x, o.y);
 						item.loadGraphic(AssetPaths.door__png, true, 64, 64);
-						item.animation.add('open', [1, 2, 3], 8);
-						item.animation.add('close', [3, 2, 1], 8);
+						item.animation.add('open', [3, 2, 1], 2, false);
+						item.animation.add('close', [1, 2, 3], 2, false);
 						if (stageRules[indexStage].outDoor == Std.parseInt(o.custom.id)) validDoor = item;
 						doors.add(item);
 						
@@ -205,11 +212,14 @@ class PlayState extends FlxState
 	
 	function TouchDoor(obj1:FlxSprite, obj2:FlxSprite) 
 	{
-		if (obj2 == validDoor && (coinsGot >= 5 || (indexStage == 2 && coinsGot >= 4) || (indexStage == 3 && coinsGot >= 1))
+		coinsTotal = 30;
+		FlxG.switchState(new TotemState(indexStage, coinsTotal));
+		
+		if (obj2 == validDoor && (coinsGot >= 5 || (indexStage == 2 && coinsGot >= 4) || (indexStage == 3 && coinsGot >= 1)))
 		{
 			CleanLevel();
 			indexStage++;
-			if (indexStage == 3 && coinsGot >= 5) FlxG.switchState(new TotemState);
+			if (indexStage == 3 && coinsGot >= 5) FlxG.switchState(new TotemState(indexStage, coinsTotal));
 			BuildLevel();
 		}
 	}
@@ -245,12 +255,21 @@ class PlayState extends FlxState
 	function TouchItem(obj1:FlxSprite, obj2:FlxSprite) 
 	{
 		if (FlxG.pixelPerfectOverlap(obj1, obj2)) {
-			remove(items.remove(obj2, true));
-			coinsGot++;
-			if (((indexStage == 2 || indexStage == 3) && coinsGot == 5) || indexStage == 5) secretSound.play();
+			if (indexStage == 2 && coinsGot == 5) AnimDiamond();
+			else {
+				remove(items.remove(obj2, true));
+				coinsGot++;
+			}
+			if (((indexStage == 2 || indexStage == 3) && coinsGot == 5)) secretSound.play();
+			
 			diamondSound.play();
 		}
 		trace(items.countDead(), items.countLiving());
+	}
+	
+	function AnimDiamond() 
+	{
+		
 	}
 
 	function TouchSpikes(obj1:FlxSprite, obj2:TiledObject) {

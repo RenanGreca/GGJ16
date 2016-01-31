@@ -3,9 +3,11 @@ package;
 import flixel.addons.editors.tiled.TiledMap;
 import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxTypedGroup;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.ui.FlxButton;
@@ -16,7 +18,7 @@ import flixel.util.FlxTimer;
 /**
  * A FlxState which can be used for the game's menu.
  */
-class MenuState extends FlxState
+class TotemState extends FlxState
 {
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -30,11 +32,30 @@ class MenuState extends FlxState
 	var player:Player;
 	var doors:FlxTypedGroup<FlxSprite>;
 	
+	var indexStage:Int = 0;
+	var coinsTotal:Int = 0;
+	
 	var tiledLevel:TiledMap;
+	
+	var doorSecret:FlxSprite;
+	var doorBack:FlxSprite;
+	var doorEnd:FlxSprite;
+	
+	var totem:FlxSprite;
+	
+	var secretSound:FlxSound;
+	
+	function new(indexStage:Int = 0, coinsTotal:Int = 0)
+	{
+		super();
+		this.indexStage = indexStage;
+		this.coinsTotal = coinsTotal;
+	}
 	
 	override public function create():Void
 	{
 		FlxG.mouse.visible = false;
+		trace('TOTEM COINS:', coinsTotal);
 		
 		tiledLevel = new TiledMap("assets/data/tilemap/finalroom.tmx");
 		
@@ -61,13 +82,15 @@ class MenuState extends FlxState
 		
 		super.create();
 		
+		secretSound = FlxG.sound.load(AssetPaths.secret__wav);
+		secretSound.play();
 	}
 	
 	
 	function SetPlayer() 
 	{
-		player.x = doors.members[1].x + 10;
-		player.y = doors.members[1].y;
+		player.x = doors.members[2].x + 10;
+		player.y = doors.members[2].y;
 		player.facing = FlxObject.RIGHT;
 		player.acceleration.y = player.gravity;
 		player.alive = true;
@@ -76,12 +99,8 @@ class MenuState extends FlxState
 	
 	function BuildLevel() 
 	{
-		items = new FlxGroup();
 		doors = new FlxTypedGroup();
-		damage = new FlxGroup();
 		trace(tiledLevel.properties);
-		
-		coinsGot = 0;
 		
 		for (group in tiledLevel.objectGroups)
 		{
@@ -92,23 +111,49 @@ class MenuState extends FlxState
 					case "door":
 						var item:FlxSprite = new FlxSprite(o.x, o.y);
 						item.loadGraphic(AssetPaths.door__png, true, 64, 64);
-						item.animation.add('open', [1, 2, 3], 8);
-						item.animation.add('close', [3, 2, 1], 8);
-						if (stageRules[indexStage].outDoor == Std.parseInt(o.custom.id)) validDoor = item;
+						item.animation.add('open', [3, 2, 1], 2, false);
+						item.animation.add('close', [1, 2, 3], 2, false);
+						if (o.custom.id.toLowerCase() == 'doorsecret') doorSecret = item;
+						if (o.custom.id.toLowerCase() == 'doorend') doorEnd = item;
+						if (o.custom.id.toLowerCase() == 'doorback') doorBack = item;
+						//if (stageRules[indexStage].outDoor == Std.parseInt(o.custom.id)) validDoor = item;
 						doors.add(item);
+					case "totem":
+						var item:FlxSprite = new FlxSprite(o.x, o.y);
+						item.loadGraphic(AssetPaths.totens__png, true, 64, 384);
+						item.animation.add('goto3', [0, 1, 2, 3], 2, false);
+						item.animation.add('goto4', [0, 1, 2, 3, 4], 2, false);
+						item.animation.add('goto5', [0, 1, 2, 3, 4, 5], 2, false);
+						totem = item;
+						add(totem);
 				}
 			}
 		}
 		trace(FlxG.camera.width, FlxG.game.width, FlxG.width);
+		trace(coinsTotal);
 		
-		progress = new FlxSprite(640, -64);
-		progress.scrollFactor.set(0, 0);
-		progress.loadGraphic(AssetPaths.barras__png, true, 384, 64);
-		progress.animation.randomFrame();
-		//progress.x = FlxG.width + (progress.frameWidth * .5);
-		trace(progress.x, progress.width, progress.frameWidth);
+		if (coinsTotal < 25)
+		{
+			totem.animation.play('goto3');
+			doorBack.animation.play('open');
+			doorEnd.visible = false;
+			doorSecret.visible = false;
+		}
+		else if (coinsTotal >= 25 && coinsTotal < 30)
+		{
+			totem.animation.play('goto4');
+			doorEnd.animation.play('open');
+			doorBack.visible = false;
+			doorSecret.visible = false;
+		}
+		else
+		{
+			totem.animation.play('goto5');
+			doorSecret.animation.play('open');
+			doorEnd.visible = false;
+			doorBack.visible = false;
+		}
 		
-		add(progress);
 		add(doors);
 		SetPlayer();
 		
@@ -132,5 +177,27 @@ class MenuState extends FlxState
 	override public function update():Void
 	{
 		super.update();
+		FlxG.collide(player, walls);
+		
+		if (player.animation.frameIndex == 5)
+			FlxG.overlap(player, doors, TouchDoor);
 	}	
+	
+	function TouchDoor(obj1:FlxSprite, obj2:FlxSprite) 
+	{
+		if (doorEnd.visible && obj2 == doorEnd)
+		{
+			FlxG.switchState(new Ending(coinsTotal));
+		}
+		
+		if(doorSecret.visible && obj2 == doorSecret){
+			FlxG.switchState(new Ending(coinsTotal));
+		}
+		
+		if (doorBack.visible && obj2 == doorBack)
+		{
+			indexStage++;
+			FlxG.switchState(new PlayState(indexStage, coinsTotal));
+		}
+	}
 }
