@@ -9,6 +9,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
+import flixel.group.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.ui.FlxButton;
@@ -30,7 +31,7 @@ class PlayState extends FlxState
 
 	var player:Player;
 	var items:FlxGroup;
-	var doors:FlxGroup;
+	var doors:FlxTypedGroup<FlxSprite>;
 	var damage:FlxGroup;
 	
 	var tiledLevel:TiledMap ;
@@ -82,18 +83,31 @@ class PlayState extends FlxState
 		//_mWalls.setTileProperties(2, FlxObject.ANY);
 		//add(_mWalls);
 		
-		player = new Player(510, 500);
+		player = new Player(doors.members[1].x, 500);
+		SetPlayer();
+		
 		add(player);
 		FlxG.camera.setBounds(256, 0, tiledLevel.fullWidth-256, tiledLevel.fullHeight, true);
 		//FlxG.camera.setBounds(256, 0, 768, 640);
 		FlxG.camera.follow(player, FlxCamera.STYLE_PLATFORMER);
 		super.create();
+		
+		FlxG.camera.fade(FlxColor.BLACK, 1, true);
+	}
+	
+	function SetPlayer() 
+	{
+		player.x = doors.members[1].x + 10;
+		player.y = doors.members[1].y;
+		player.facing = FlxObject.RIGHT;
+		player.acceleration.y = player.gravity;
+		player.alive = true;
 	}
 	
 	function BuildLevel() 
 	{
 		items = new FlxGroup();
-		doors = new FlxGroup();
+		doors = new FlxTypedGroup();
 		damage = new FlxGroup();
 		trace(tiledLevel.properties);
 		for (group in tiledLevel.objectGroups)
@@ -145,18 +159,21 @@ class PlayState extends FlxState
 	{
 		//trace(player.x, player.y);
 		if (player.x < 210) FlxG.camera.setBounds(0, 0, 1024, 640, true);
-		if (FlxG.keys.justPressed.C) {
-			player.x = 610; trace('in');
-			player.y = 500;
-			player.acceleration.y = player.gravity;
-			player.alive = true;
-		}
+		if (FlxG.keys.justPressed.C) SetPlayer();
 
 		super.update();
 		FlxG.collide(player, walls);
 		FlxG.overlap(player, items, TouchItem);
 		FlxG.overlap(player, damage, TouchDamage);
+		
+		if (player.animation.frameIndex == 5)
+			FlxG.overlap(player, doors, TouchDoor);
 	}	
+	
+	function TouchDoor(obj1:FlxSprite, obj2:FlxSprite) 
+	{
+		
+	}
 	
 	function TouchDamage(obj1:FlxSprite, obj2:FlxSprite)
 	{
@@ -174,7 +191,7 @@ class PlayState extends FlxState
 	
 	function TouchItem(obj1:FlxSprite, obj2:FlxSprite) 
 	{
-		remove(items.remove(obj2, true));
+		if (FlxG.pixelPerfectOverlap(obj1, obj2)) remove(items.remove(obj2, true));
 		trace(items.countDead(), items.countLiving());
 	}
 }

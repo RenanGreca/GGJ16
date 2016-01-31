@@ -36,7 +36,7 @@ class Player extends FlxSprite {
 	}
 
 	private function movement(): Void {
-		trace('movement');
+		//trace('movement');
 
 		velocity.x = 0;
 		if (FlxG.keys.pressed.LEFT) {
