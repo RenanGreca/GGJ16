@@ -219,7 +219,6 @@ class PlayState extends FlxState
 	override public function update():Void
 	{
 		if (player.x < 210) FlxG.camera.setBounds(0, 0, 1024, 640, true);
-		if (FlxG.keys.justPressed.C) SetPlayer();
 
 		super.update();
 		FlxG.collide(player, walls);
@@ -269,6 +268,7 @@ class PlayState extends FlxState
 			player.velocity.x = 0;
 			player.animation.play("dead");
 			
+			if(indexStage != 3) coinsGot = 0;
 			new FlxTimer(1, ResetLevel);
 		}
 	}

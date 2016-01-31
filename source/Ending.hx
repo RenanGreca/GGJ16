@@ -37,6 +37,7 @@ class Ending extends FlxState
 		
 		if (coinsTotal >= 30) cutscenes = [AssetPaths.end2__png];
 		else cutscenes = [AssetPaths.end1__png];
+		cutscenes.push(AssetPaths.credits__png);
 		
 		super.create();
 		
@@ -53,7 +54,7 @@ class Ending extends FlxState
 		FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
 		cutNum++;
 		
-		new FlxTimer(3, TimerOff);
+		if(cutNum < 2) new FlxTimer(3, TimerOff);
 		//FlxG.camera.fade(FlxColor.BLACK, 1, true, function() {
 			//Flx
 		//});
@@ -81,6 +82,7 @@ class Ending extends FlxState
 	 */
 	override public function update():Void
 	{
+		if (FlxG.keys.anyPressed(["UP", "SPACE"])) FlxG.switchState(new MenuState());
 		super.update();
 	}	
 }
