@@ -9,6 +9,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.system.FlxSound;
 import flixel.group.FlxGroup;
 import flixel.group.FlxTypedGroup;
 import flixel.text.FlxText;
@@ -39,6 +40,7 @@ class PlayState extends FlxState
 	var tiledLevel:TiledMap;
 	
 	var progress:FlxSprite;
+	var diamondSound:FlxSound;
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -46,6 +48,9 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		FlxG.mouse.visible = false;
+
+		FlxG.sound.playMusic(AssetPaths.GGJ16__wav, 1, true);
+		diamondSound = FlxG.sound.load(AssetPaths.diamond__wav);
 		
 		tiledLevel = new TiledMap("assets/data/tilemap/ggj.tmx");
 		
@@ -184,7 +189,10 @@ class PlayState extends FlxState
 	
 	function TouchItem(obj1:FlxSprite, obj2:FlxSprite) 
 	{
-		if (FlxG.pixelPerfectOverlap(obj1, obj2)) remove(items.remove(obj2, true));
+		if (FlxG.pixelPerfectOverlap(obj1, obj2)) {
+			remove(items.remove(obj2, true));
+			diamondSound.play();
+		}
 		trace(items.countDead(), items.countLiving());
 	}
 
