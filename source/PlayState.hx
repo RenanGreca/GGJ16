@@ -20,6 +20,7 @@ import flixel.util.FlxMath;
 import flixel.util.FlxPoint;
 import haxe.io.Path;
 import openfl.Assets;
+import flixel.util.FlxTimer;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -123,6 +124,7 @@ class PlayState extends FlxState
 	
 	function BuildLevel() 
 	{
+
 		items = new FlxTypedGroup();
 		doors = new FlxTypedGroup();
 		damage = new FlxGroup();
@@ -163,7 +165,7 @@ class PlayState extends FlxState
 		}
 		trace(FlxG.camera.width, FlxG.game.width, FlxG.width);
 
-		for (i in 0...6) {
+		for (i in 0...5) {
 			var diamond = new FlxSprite(256+(64*i), -64);
 			diamond.loadGraphic(AssetPaths.diamante__png, true, 64, 64);
 			diamond.animation.frameIndex = 1;
@@ -173,9 +175,9 @@ class PlayState extends FlxState
 		}
 		
 		progress = new FlxSprite(640, -64);
-		progress.scrollFactor.set(0, 0);
+		//progress.scrollFactor.set(0, 0);
 		progress.loadGraphic(AssetPaths.barras__png, true, 384, 64);
-		progress.animation.randomFrame();
+		progress.animation.frameIndex = indexStage;
 		//progress.x = FlxG.width + (progress.frameWidth * .5);
 		
 		add(progress);
@@ -227,7 +229,7 @@ class PlayState extends FlxState
 		{
 			CleanLevel();
 			indexStage++;
-			//if (indexStage == 3 && coinsGot >= 5) FlxG.switchState(new TotemState());
+			if (indexStage == 3 && coinsGot >= 5) trace('switch to totem state'); //FlxG.switchState(new TotemState());
 			BuildLevel();
 		}
 	}
@@ -238,6 +240,9 @@ class PlayState extends FlxState
 		remove(items);
 		remove(doors);
 		remove(damage);
+		for (diamond in diamonds) {
+			remove(diamond);	
+		}
 		remove(player);
 	}
 	
@@ -253,9 +258,13 @@ class PlayState extends FlxState
 			
 			if (indexStage != 3)
 			{
-				CleanLevel(); BuildLevel();
+				new FlxTimer(1, ResetLevel);
 			}
 		}
+	}
+
+	function ResetLevel(timer:FlxTimer) {
+		CleanLevel(); BuildLevel();
 	}
 	
 	function TouchItem(obj1:FlxSprite, obj2:FlxSprite) 
@@ -269,6 +278,7 @@ class PlayState extends FlxState
 			}
 
 			coinsGot++;
+			coinsTotal++;
 			if (((indexStage == 2 || indexStage == 3) && coinsGot == 5) || indexStage == 5) secretSound.play();
 			diamondSound.play();
 
