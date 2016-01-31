@@ -30,6 +30,8 @@ class PlayState extends FlxState
 
 	var player:Player;
 	var items:FlxGroup;
+	var doors:FlxGroup;
+	var damage:FlxGroup;
 	
 	var tiledLevel:TiledMap ;
 	
@@ -91,8 +93,9 @@ class PlayState extends FlxState
 	function BuildLevel() 
 	{
 		items = new FlxGroup();
+		doors = new FlxGroup();
+		damage = new FlxGroup();
 		trace(tiledLevel.properties);
-		//tra
 		for (group in tiledLevel.objectGroups)
 		{
 			for (o in group.objects)
@@ -107,9 +110,19 @@ class PlayState extends FlxState
 						item.animation.play('shine');
 						items.add(item);
 						add(item);
+					
+					case "door":
+						var item:FlxSprite = new FlxSprite(o.x, o.y);
+						item.loadGraphic(AssetPaths.door__png, true, 64, 64);
+						item.animation.add('open', [1, 2, 3], 8);
+						doors.add(item);
+						add(item);
 						
 					case "spikes":
-						trace("spikes");
+						var item:FlxSprite = new FlxSprite(o.x, o.y + 15);
+						item.loadGraphic(AssetPaths.espinhos__png, false, 64, 64);
+						damage.add(item);
+						add(item);
 				}
 			}
 		}
@@ -132,15 +145,32 @@ class PlayState extends FlxState
 	{
 		//trace(player.x, player.y);
 		if (player.x < 210) FlxG.camera.setBounds(0, 0, 1024, 640, true);
-		if (FlxG.keys.pressed.C) {
-			player.x = 610;
+		if (FlxG.keys.justPressed.C) {
+			player.x = 610; trace('in');
 			player.y = 500;
+			player.acceleration.y = player.gravity;
+			player.alive = true;
 		}
 
 		super.update();
 		FlxG.collide(player, walls);
 		FlxG.overlap(player, items, TouchItem);
+		FlxG.overlap(player, damage, TouchDamage);
 	}	
+	
+	function TouchDamage(obj1:FlxSprite, obj2:FlxSprite)
+	{
+		if (player.alive)
+		{
+			trace('die1');
+			player.alive = false;
+			player.velocity.y = 0;
+			player.acceleration.y = 100;
+			player.velocity.x = 0;
+			player.animation.frameIndex = 1;
+			trace('die2');
+		}
+	}
 	
 	function TouchItem(obj1:FlxSprite, obj2:FlxSprite) 
 	{
