@@ -26,6 +26,7 @@ class Player extends FlxSprite {
 		animation.add("lr", [2,3], 6, false);
 		animation.add("u", [4], 6, false);
 		animation.add("d", [5], 6, false);
+		animation.add("dead", [1], 6, false);
 
 		//setSize(8, 14);
 		//offset.set(4, 2);
@@ -63,7 +64,7 @@ class Player extends FlxSprite {
 			animation.frameIndex = 0;
 		}
 
-        _gamepad = FlxG.gamepads.lastActive;
+        /*_gamepad = FlxG.gamepads.lastActive;
         if (_gamepad != null) {
 
 			_gamepad.firstPressedButtonID();

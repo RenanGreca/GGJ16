@@ -3,6 +3,7 @@ package;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.addons.editors.tiled.TiledLayer;
 import flixel.addons.editors.tiled.TiledMap;
+import flixel.addons.editors.tiled.TiledObject;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -30,6 +31,7 @@ class PlayState extends FlxState
 
 	var player:Player;
 	var items:FlxGroup;
+	var spikes:TiledObject;
 	
 	var tiledLevel:TiledMap ;
 	
@@ -41,6 +43,7 @@ class PlayState extends FlxState
 	 */
 	override public function create():Void
 	{
+
 		//level = new FlxTilemap();
 		//mapData = Assets.getText("assets/data/tilemap/tilemap_walls.csv");
 		//mapTilePath = "assets/data/tilemap/tileset.png";
@@ -110,6 +113,7 @@ class PlayState extends FlxState
 						
 					case "spikes":
 						trace("spikes");
+						spikes = o;
 				}
 			}
 		}
@@ -140,11 +144,16 @@ class PlayState extends FlxState
 		super.update();
 		FlxG.collide(player, walls);
 		FlxG.overlap(player, items, TouchItem);
+		//FlxG.overlap(player, spikes, TouchSpikes);
 	}	
 	
 	function TouchItem(obj1:FlxSprite, obj2:FlxSprite) 
 	{
 		remove(items.remove(obj2, true));
 		trace(items.countDead(), items.countLiving());
+	}
+
+	function TouchSpikes(obj1:FlxSprite, obj2:TiledObject) {
+		player.animation.play("dead");
 	}
 }
