@@ -26,6 +26,8 @@ class MenuState extends FlxState
 	
 	override public function create():Void
 	{
+		FlxG.mouse.visible = false;
+
 		cutscenes = [AssetPaths.cutscene__png, AssetPaths.cutscene2__png];
 		
 		super.create();
