@@ -63,6 +63,11 @@ class PlayState extends FlxState
 	var info6:StageInfo = new StageInfo([], 2, false);
 	var info7:StageInfo = new StageInfo([1, 2, 3, 5, 6], 3, true);
 
+	function new(stage:Int=0) {
+		super();
+		this.numStage = stage;
+	}
+
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -198,7 +203,6 @@ class PlayState extends FlxState
 	
 	function TouchDoor(obj1:FlxSprite, obj2:FlxSprite) 
 	{
-
 	}
 	
 	function TouchDamage(obj1:FlxSprite, obj2:FlxSprite)
