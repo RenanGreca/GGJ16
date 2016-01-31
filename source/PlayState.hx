@@ -42,11 +42,34 @@ class PlayState extends FlxState
 	var progress:FlxSprite;
 	var diamondSound:FlxSound;
 	
+	var numStage:Int = 0;
+	
+	var stageRules:Array<StageInfo> = new Array();
+	
+							//[[[1,2,3,4,5],2,true], //Hello World
+							//[[1,2,3,4,5],2,true], //Hello World
+							//[[1,2,3,4,5],2,true], //Diamond Pop
+							//[[1,2,3,4,5],2,false], //First Sacrifice
+							//[[1,2,3,4,5],1,true], //Backwards Forwards
+							//[[],2,false], //He's special
+							//[[1,2,3,5,6],3] //The Secret
+							//];
+							
+	var info1:StageInfo = new StageInfo([1, 2, 3, 4, 5], 2, true);
+	var info2:StageInfo = new StageInfo([1, 2, 3, 4, 5], 2, true);
+	var info3:StageInfo = new StageInfo([1, 2, 3, 4, 5], 2, true);
+	var info4:StageInfo = new StageInfo([1, 2, 3, 4, 5], 2, false);
+	var info5:StageInfo = new StageInfo([1, 2, 3, 4, 5], 1, true);
+	var info6:StageInfo = new StageInfo([], 2, false);
+	var info7:StageInfo = new StageInfo([1, 2, 3, 5, 6], 3, true);
+
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
 	override public function create():Void
 	{
+		stageRules = [info1, info2, info3, info4, info5, info6, info7];
+		
 		FlxG.mouse.visible = false;
 
 		FlxG.sound.playMusic(AssetPaths.GGJ16__wav, 1, true);
@@ -100,6 +123,7 @@ class PlayState extends FlxState
 		doors = new FlxTypedGroup();
 		damage = new FlxGroup();
 		trace(tiledLevel.properties);
+		
 		for (group in tiledLevel.objectGroups)
 		{
 			for (o in group.objects)
@@ -107,12 +131,16 @@ class PlayState extends FlxState
 				switch (o.name.toLowerCase())
 				{
 					case "item":
-						trace(o.name, o.x, o.y);
-						var item:FlxSprite = new FlxSprite(o.x, o.y);
-						item.loadGraphic(AssetPaths.diamante__png, true, 64, 64);
-						item.animation.add('shine', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32], 8, true);
-						item.animation.play('shine');
-						items.add(item);
+						trace(o.custom.id);
+						if (stageRules[numStage].diamonds.indexOf(Std.parseInt(o.custom.id)) > -1)
+						{
+							trace(o.name, o.x, o.y);
+							var item:FlxSprite = new FlxSprite(o.x, o.y);
+							item.loadGraphic(AssetPaths.diamante__png, true, 64, 64);
+							item.animation.add('shine', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32], 8, true);
+							item.animation.play('shine');
+							items.add(item);
+						}
 					
 					case "door":
 						var item:FlxSprite = new FlxSprite(o.x, o.y);
@@ -170,7 +198,7 @@ class PlayState extends FlxState
 	
 	function TouchDoor(obj1:FlxSprite, obj2:FlxSprite) 
 	{
-		
+
 	}
 	
 	function TouchDamage(obj1:FlxSprite, obj2:FlxSprite)
