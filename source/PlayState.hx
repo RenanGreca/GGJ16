@@ -3,11 +3,13 @@ package;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.addons.editors.tiled.TiledLayer;
 import flixel.addons.editors.tiled.TiledMap;
+import flixel.addons.editors.tiled.TiledObject;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.system.FlxSound;
 import flixel.group.FlxGroup;
 import flixel.group.FlxTypedGroup;
 import flixel.text.FlxText;
@@ -38,6 +40,7 @@ class PlayState extends FlxState
 	var tiledLevel:TiledMap;
 	
 	var progress:FlxSprite;
+	var diamondSound:FlxSound;
 	
 	var numStage:Int = 0;
 	
@@ -68,6 +71,9 @@ class PlayState extends FlxState
 		stageRules = [info1, info2, info3, info4, info5, info6, info7];
 		
 		FlxG.mouse.visible = false;
+
+		FlxG.sound.playMusic(AssetPaths.GGJ16__wav, 1, true);
+		diamondSound = FlxG.sound.load(AssetPaths.diamond__wav);
 		
 		tiledLevel = new TiledMap("assets/data/tilemap/ggj.tmx");
 		
@@ -211,7 +217,14 @@ class PlayState extends FlxState
 	
 	function TouchItem(obj1:FlxSprite, obj2:FlxSprite) 
 	{
-		if (FlxG.pixelPerfectOverlap(obj1, obj2)) remove(items.remove(obj2, true));
+		if (FlxG.pixelPerfectOverlap(obj1, obj2)) {
+			remove(items.remove(obj2, true));
+			diamondSound.play();
+		}
 		trace(items.countDead(), items.countLiving());
+	}
+
+	function TouchSpikes(obj1:FlxSprite, obj2:TiledObject) {
+		player.animation.play("dead");
 	}
 }

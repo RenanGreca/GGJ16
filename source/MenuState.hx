@@ -15,6 +15,8 @@ import flixel.util.FlxTimer;
  */
 class MenuState extends FlxState
 {
+	var bg:FlxSprite;
+
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
