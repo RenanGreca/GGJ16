@@ -298,7 +298,7 @@ class PlayState extends FlxState
 			}
 			if (indexStage == 3) validDoor.animation.play('open');
 			
-			if (indexStage == 2 && coinsGot == 5) AnimDiamond();
+			if (indexStage == 2 && coinsGot == 5 && !secretDiamond.visible) AnimDiamond();
 			trace(coinsGot, coinsTotal);
 			
 			for (i in 0...coinsGot) diamonds[i].alpha = 1;
