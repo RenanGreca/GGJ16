@@ -55,6 +55,7 @@ class TotemState extends FlxState
 	override public function create():Void
 	{
 		FlxG.mouse.visible = false;
+		FlxG.sound.playMusic(AssetPaths.wind__wav, 1, true);
 		trace('TOTEM COINS:', coinsTotal);
 		
 		tiledLevel = new TiledMap("assets/data/tilemap/finalroom.tmx");
@@ -169,6 +170,7 @@ class TotemState extends FlxState
 	override public function destroy():Void
 	{
 		super.destroy();
+		FlxG.sound.music.stop();
 	}
 
 	/**

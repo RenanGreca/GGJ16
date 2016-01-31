@@ -86,7 +86,7 @@ class PlayState extends FlxState
 		
 		FlxG.mouse.visible = false;
 
-		//FlxG.sound.playMusic(AssetPaths.GGJ16__wav, 1, true);
+		FlxG.sound.playMusic(AssetPaths.GGJ16__wav, 1, true);
 		diamondSound = FlxG.sound.load(AssetPaths.diamond__wav);
 		secretSound = FlxG.sound.load(AssetPaths.secret__wav);
 		
@@ -211,6 +211,7 @@ class PlayState extends FlxState
 	override public function destroy():Void
 	{
 		super.destroy();
+		FlxG.sound.music.stop();
 	}
 
 	/**
@@ -239,9 +240,10 @@ class PlayState extends FlxState
 		if (obj2 == validDoor && (coinsGot >= 5 || (indexStage == 2 && coinsGot >= 4) || (indexStage == 3 && coinsGot >= 1)))
 		{
 			CleanLevel();
-			if (indexStage == 3 && coinsGot >= 5) FlxG.switchState(new TotemState(indexStage, coinsTotal));
 			if (indexStage == 5 && coinsGot >= 5) FlxG.switchState(new TotemState(indexStage, coinsTotal));
 			else indexStage++;
+			
+			if (indexStage == 4 && coinsGot >= 5) FlxG.switchState(new TotemState(indexStage, coinsTotal));
 			BuildLevel();
 		}
 	}
