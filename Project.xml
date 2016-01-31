@@ -2,7 +2,7 @@
 <project>
 	<!------------------------------APPLICATION SETTINGS---------------------------->
 	
-	<app title="GGJ2016_GAME" file="GGJ2016_GAME" main="Main" version="0.0.1" company="HaxeFlixel" />
+	<app title="RATUAL" file="RATUAL" main="Main" version="1.0" company="" />
 	
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 	<!--or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"!-->
@@ -77,6 +77,6 @@
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 	
 	<!--------------------------------CUSTOM---------------------------------------->
-	
-	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
+	<icon path="assets/icon.png"></icon>
+	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->"
 </project>

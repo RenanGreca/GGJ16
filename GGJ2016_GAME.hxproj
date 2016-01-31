@@ -4,14 +4,14 @@
   <output>
     <movie outputType="CustomBuild" />
     <movie input="" />
-    <movie path="Project.xml" />
+    <movie path="project.xml" />
     <movie fps="60" />
     <movie width="768" />
     <movie height="724" />
-    <movie version="1" />
+    <movie version="0" />
     <movie minorVersion="0" />
     <movie platform="Lime" />
-    <movie background="000000" />
+    <movie background="#000000" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
@@ -25,12 +25,12 @@
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="flixel-addons=1.1.1&#xA;flixel=3.3.12&#xA;lime=2.9.0&#xA;openfl=3.6.0&#xA;openfl-next&#xA;tools=2.9.0&#xA;NAPE_NO_INLINE&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;FLX_RENDER_TILE&#xA;windows&#xA;desktop&#xA;display" />
+    <option directives="flixel-addons=1.1.1&#xA;flixel=3.3.12&#xA;lime=2.9.0&#xA;openfl=3.6.0&#xA;openfl-next&#xA;tools=2.9.0&#xA;NAPE_NO_INLINE&#xA;FLX_NO_DEBUG&#xA;no-compilation&#xA;NAPE_RELEASE_BUILD&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;FLX_RENDER_TILE&#xA;windows&#xA;desktop&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="False" />
-    <option additional="--remap flash:openfl&#xA;#--macro keep(&quot;Main&quot;)&#xA;-debug " />
+    <option additional="--remap flash:openfl&#xA;#--macro keep(&quot;Main&quot;)" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
