@@ -33,16 +33,22 @@ class PlayState extends FlxState
 	var walls:FlxTilemap;
 
 	var player:Player;
-	var items:FlxGroup;
+	var items:FlxTypedGroup<FlxSprite>;
 	var doors:FlxTypedGroup<FlxSprite>;
 	var damage:FlxGroup;
+
+	var diamonds:Array<FlxSprite>;
 	
 	var tiledLevel:TiledMap;
 	
 	var progress:FlxSprite;
 	var diamondSound:FlxSound;
+	var secretSound:FlxSound;
 	
-	var numStage:Int = 0;
+	var indexStage:Int = 0;
+	var coinsGot:Int = 0;
+	var coinsTotal:Int = 0;
+	var validDoor:FlxSprite;
 	
 	var stageRules:Array<StageInfo> = new Array();
 	
@@ -60,12 +66,11 @@ class PlayState extends FlxState
 	var info3:StageInfo = new StageInfo([1, 2, 3, 4, 5], 2, true);
 	var info4:StageInfo = new StageInfo([1, 2, 3, 4, 5], 2, false);
 	var info5:StageInfo = new StageInfo([1, 2, 3, 4, 5], 1, true);
-	var info6:StageInfo = new StageInfo([], 2, false);
-	var info7:StageInfo = new StageInfo([1, 2, 3, 5, 6], 3, true);
+	var info6:StageInfo = new StageInfo([1, 2, 3, 5, 6], 3, true);
 
 	function new(stage:Int=0) {
 		super();
-		this.numStage = stage;
+		this.indexStage = stage;
 	}
 
 	/**
@@ -73,18 +78,18 @@ class PlayState extends FlxState
 	 */
 	override public function create():Void
 	{
-		stageRules = [info1, info2, info3, info4, info5, info6, info7];
+		stageRules = [info1, info2, info3, info4, info5, info6];
 		
 		FlxG.mouse.visible = false;
 
-		FlxG.sound.playMusic(AssetPaths.GGJ16__wav, 1, true);
+		//FlxG.sound.playMusic(AssetPaths.GGJ16__wav, 1, true);
 		diamondSound = FlxG.sound.load(AssetPaths.diamond__wav);
+		secretSound = FlxG.sound.load(AssetPaths.secret__wav);
 		
 		tiledLevel = new TiledMap("assets/data/tilemap/ggj.tmx");
 		
 		for (layer in tiledLevel.layers)
 		{
-			trace(layer.name);
 			
 			var layerData:String = layer.csvData;
 			var tilesheetPath:String = "assets/data/tilemap/tileset.png";
@@ -100,17 +105,10 @@ class PlayState extends FlxState
 			}
 		}
 		
+		player = new Player(0,0);
 		BuildLevel();
 		
-		player = new Player(doors.members[1].x, 500);
-		SetPlayer();
-		
-		add(player);
-		FlxG.camera.setBounds(256, 0, tiledLevel.fullWidth-256, tiledLevel.fullHeight, true);
-		FlxG.camera.follow(player, FlxCamera.STYLE_PLATFORMER);
 		super.create();
-		
-		FlxG.camera.fade(FlxColor.BLACK, 1, true);
 	}
 	
 	function SetPlayer() 
@@ -120,14 +118,17 @@ class PlayState extends FlxState
 		player.facing = FlxObject.RIGHT;
 		player.acceleration.y = player.gravity;
 		player.alive = true;
+		add(player);
 	}
 	
 	function BuildLevel() 
 	{
-		items = new FlxGroup();
+		items = new FlxTypedGroup();
 		doors = new FlxTypedGroup();
 		damage = new FlxGroup();
-		trace(tiledLevel.properties);
+		diamonds = new Array();
+		
+		coinsGot = 0;
 		
 		for (group in tiledLevel.objectGroups)
 		{
@@ -136,10 +137,8 @@ class PlayState extends FlxState
 				switch (o.name.toLowerCase())
 				{
 					case "item":
-						trace(o.custom.id);
-						if (stageRules[numStage].diamonds.indexOf(Std.parseInt(o.custom.id)) > -1)
+						if (stageRules[indexStage].diamonds.indexOf(Std.parseInt(o.custom.id)) > -1)
 						{
-							trace(o.name, o.x, o.y);
 							var item:FlxSprite = new FlxSprite(o.x, o.y);
 							item.loadGraphic(AssetPaths.diamante__png, true, 64, 64);
 							item.animation.add('shine', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32], 8, true);
@@ -151,6 +150,8 @@ class PlayState extends FlxState
 						var item:FlxSprite = new FlxSprite(o.x, o.y);
 						item.loadGraphic(AssetPaths.door__png, true, 64, 64);
 						item.animation.add('open', [1, 2, 3], 8);
+						item.animation.add('close', [3, 2, 1], 8);
+						if (stageRules[indexStage].outDoor == Std.parseInt(o.custom.id)) validDoor = item;
 						doors.add(item);
 						
 					case "spikes":
@@ -161,18 +162,32 @@ class PlayState extends FlxState
 			}
 		}
 		trace(FlxG.camera.width, FlxG.game.width, FlxG.width);
+
+		for (i in 0...6) {
+			var diamond = new FlxSprite(256+(64*i), -64);
+			diamond.loadGraphic(AssetPaths.diamante__png, true, 64, 64);
+			diamond.animation.frameIndex = 1;
+			diamond.alpha = 0.5;
+			diamonds.push(diamond);
+			add(diamond);
+		}
 		
 		progress = new FlxSprite(640, -64);
 		progress.scrollFactor.set(0, 0);
 		progress.loadGraphic(AssetPaths.barras__png, true, 384, 64);
 		progress.animation.randomFrame();
 		//progress.x = FlxG.width + (progress.frameWidth * .5);
-		trace(progress.x, progress.width, progress.frameWidth);
 		
 		add(progress);
 		add(items);
 		add(doors);
 		add(damage);
+		//add(diamonds);
+		SetPlayer();
+		
+		FlxG.camera.setBounds(256, 0, tiledLevel.fullWidth-256, tiledLevel.fullHeight, true);
+		FlxG.camera.follow(player, FlxCamera.STYLE_PLATFORMER);
+		FlxG.camera.fade(FlxColor.BLACK, 1, true);
 	}
 	
 	/**
@@ -194,7 +209,12 @@ class PlayState extends FlxState
 
 		super.update();
 		FlxG.collide(player, walls);
-		FlxG.overlap(player, items, TouchItem);
+		//FlxG.overlap(player, items, TouchItem);
+		for (o in items) {
+			if (FlxG.overlap(player, o)) {
+				TouchItem(player, o);
+			}
+		}
 		FlxG.overlap(player, damage, TouchDamage);
 		
 		if (player.animation.frameIndex == 5)
@@ -203,29 +223,56 @@ class PlayState extends FlxState
 	
 	function TouchDoor(obj1:FlxSprite, obj2:FlxSprite) 
 	{
+		if (obj2 == validDoor && (coinsGot >= 5 || (indexStage == 2 && coinsGot >= 4) || (indexStage == 3 && coinsGot >= 1)))
+		{
+			CleanLevel();
+			indexStage++;
+			//if (indexStage == 3 && coinsGot >= 5) FlxG.switchState(new TotemState());
+			BuildLevel();
+		}
+	}
+	
+	function CleanLevel()
+	{
+		progress.animation.frameIndex = 0;
+		remove(items);
+		remove(doors);
+		remove(damage);
+		remove(player);
 	}
 	
 	function TouchDamage(obj1:FlxSprite, obj2:FlxSprite)
 	{
 		if (player.alive)
 		{
-			trace('die1');
 			player.alive = false;
 			player.velocity.y = 0;
 			player.acceleration.y = 100;
 			player.velocity.x = 0;
 			player.animation.frameIndex = 1;
-			trace('die2');
+			
+			if (indexStage != 3)
+			{
+				CleanLevel(); BuildLevel();
+			}
 		}
 	}
 	
 	function TouchItem(obj1:FlxSprite, obj2:FlxSprite) 
 	{
+
 		if (FlxG.pixelPerfectOverlap(obj1, obj2)) {
+
 			remove(items.remove(obj2, true));
+			if (coinsGot < diamonds.length) {
+				diamonds[coinsGot].alpha = 1;
+			}
+
+			coinsGot++;
+			if (((indexStage == 2 || indexStage == 3) && coinsGot == 5) || indexStage == 5) secretSound.play();
 			diamondSound.play();
+
 		}
-		trace(items.countDead(), items.countLiving());
 	}
 
 	function TouchSpikes(obj1:FlxSprite, obj2:TiledObject) {
