@@ -56,7 +56,7 @@ class Player extends FlxSprite {
 			jump();
 		}
 
-		if (FlxG.keys.pressed.DOWN) {
+		if (FlxG.keys.pressed.DOWN && isTouching(FlxObject.FLOOR)) {
 			animation.frameIndex = 5;
 		}
 

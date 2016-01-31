@@ -52,14 +52,14 @@ class PlayState extends FlxState
 		FlxG.sound.playMusic(AssetPaths.GGJ16__wav, 1, true);
 		diamondSound = FlxG.sound.load(AssetPaths.diamond__wav);
 		
-		tiledLevel = new TiledMap("assets/data/tilemap/finalroom.tmx");
+		tiledLevel = new TiledMap("assets/data/tilemap/ggj.tmx");
 		
 		for (layer in tiledLevel.layers)
 		{
 			trace(layer.name);
 			
 			var layerData:String = layer.csvData;
-			var tilesheetPath:String = "assets/data/tilemap/ggj.png";
+			var tilesheetPath:String = "assets/data/tilemap/tileset.png";
 			
 			var level:FlxTilemap = new FlxTilemap();
 			
