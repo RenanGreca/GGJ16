@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="16" height="10" tilewidth="64" tileheight="64" nextobjectid="14">
+ <tileset firstgid="1" name="tileset" tilewidth="64" tileheight="64">
+  <image source="tileset.png" width="1280" height="832"/>
+ </tileset>
+ <tileset firstgid="261" name="totens" tilewidth="64" tileheight="384">
+  <image source="totens.png" width="384" height="384"/>
+ </tileset>
+ <layer name="Background" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJybzcDAMHsUj+IBwgDjV2Dh
+  </data>
+ </layer>
+ <layer name="Walls" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYEAFcUAcTyROYMAEXljEcAGfUf3DTr87ELsRiT2BGACQGAxx
+  </data>
+ </layer>
+ <layer name="Totem" width="16" height="10" visible="0">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo4Aw4GCkjbkABZcACg==
+  </data>
+ </layer>
+ <layer name="Details" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFwxHswiO3A4i30cshBAAAQe8CKQ==
+  </data>
+ </layer>
+ <objectgroup name="Totem">
+  <object id="1" x="640" y="192"/>
+ </objectgroup>
+ <objectgroup name="Doors">
+  <object id="11" x="384" y="512"/>
+  <object id="12" x="832" y="512"/>
+  <object id="13" x="896" y="512"/>
+ </objectgroup>
+</map>
