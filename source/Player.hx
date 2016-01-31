@@ -25,6 +25,7 @@ class Player extends FlxSprite {
 
 		animation.add("lr", [2,3], 6, false);
 		animation.add("u", [4], 6, false);
+		animation.add("d", [5], 6, false);
 
 		//setSize(8, 14);
 		//offset.set(4, 2);
@@ -53,7 +54,11 @@ class Player extends FlxSprite {
 			jump();
 		}
 
-		if (velocity.x == 0 && velocity.y == 0) {
+		if (FlxG.keys.pressed.DOWN) {
+			animation.frameIndex = 5;
+		}
+
+		if (velocity.x == 0 && velocity.y == 0 && !FlxG.keys.pressed.DOWN) {
 			animation.pause();
 			animation.frameIndex = 0;
 		}
