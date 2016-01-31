@@ -41,8 +41,12 @@ class PlayState extends FlxState
 	
 	var progress:FlxSprite;
 	var diamondSound:FlxSound;
+	var secretSound:FlxSound;
 	
-	var numStage:Int = 0;
+	var indexStage:Int = 0;
+	var coinsGot:Int = 0;
+	var coinsTotal:Int = 0;
+	var validDoor:FlxSprite;
 	
 	var stageRules:Array<StageInfo> = new Array();
 	
@@ -60,20 +64,20 @@ class PlayState extends FlxState
 	var info3:StageInfo = new StageInfo([1, 2, 3, 4, 5], 2, true);
 	var info4:StageInfo = new StageInfo([1, 2, 3, 4, 5], 2, false);
 	var info5:StageInfo = new StageInfo([1, 2, 3, 4, 5], 1, true);
-	var info6:StageInfo = new StageInfo([], 2, false);
-	var info7:StageInfo = new StageInfo([1, 2, 3, 5, 6], 3, true);
+	var info6:StageInfo = new StageInfo([1, 2, 3, 5, 6], 3, true);
 
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
 	override public function create():Void
 	{
-		stageRules = [info1, info2, info3, info4, info5, info6, info7];
+		stageRules = [info1, info2, info3, info4, info5, info6];
 		
 		FlxG.mouse.visible = false;
 
-		FlxG.sound.playMusic(AssetPaths.GGJ16__wav, 1, true);
+		//FlxG.sound.playMusic(AssetPaths.GGJ16__wav, 1, true);
 		diamondSound = FlxG.sound.load(AssetPaths.diamond__wav);
+		secretSound = FlxG.sound.load(AssetPaths.secret__wav);
 		
 		tiledLevel = new TiledMap("assets/data/tilemap/ggj.tmx");
 		
@@ -95,17 +99,10 @@ class PlayState extends FlxState
 			}
 		}
 		
+		player = new Player(0,0);
 		BuildLevel();
 		
-		player = new Player(doors.members[1].x, 500);
-		SetPlayer();
-		
-		add(player);
-		FlxG.camera.setBounds(256, 0, tiledLevel.fullWidth-256, tiledLevel.fullHeight, true);
-		FlxG.camera.follow(player, FlxCamera.STYLE_PLATFORMER);
 		super.create();
-		
-		FlxG.camera.fade(FlxColor.BLACK, 1, true);
 	}
 	
 	function SetPlayer() 
@@ -115,6 +112,7 @@ class PlayState extends FlxState
 		player.facing = FlxObject.RIGHT;
 		player.acceleration.y = player.gravity;
 		player.alive = true;
+		add(player);
 	}
 	
 	function BuildLevel() 
@@ -124,6 +122,8 @@ class PlayState extends FlxState
 		damage = new FlxGroup();
 		trace(tiledLevel.properties);
 		
+		coinsGot = 0;
+		
 		for (group in tiledLevel.objectGroups)
 		{
 			for (o in group.objects)
@@ -132,7 +132,7 @@ class PlayState extends FlxState
 				{
 					case "item":
 						trace(o.custom.id);
-						if (stageRules[numStage].diamonds.indexOf(Std.parseInt(o.custom.id)) > -1)
+						if (stageRules[indexStage].diamonds.indexOf(Std.parseInt(o.custom.id)) > -1)
 						{
 							trace(o.name, o.x, o.y);
 							var item:FlxSprite = new FlxSprite(o.x, o.y);
@@ -146,6 +146,8 @@ class PlayState extends FlxState
 						var item:FlxSprite = new FlxSprite(o.x, o.y);
 						item.loadGraphic(AssetPaths.door__png, true, 64, 64);
 						item.animation.add('open', [1, 2, 3], 8);
+						item.animation.add('close', [3, 2, 1], 8);
+						if (stageRules[indexStage].outDoor == Std.parseInt(o.custom.id)) validDoor = item;
 						doors.add(item);
 						
 					case "spikes":
@@ -168,6 +170,11 @@ class PlayState extends FlxState
 		add(items);
 		add(doors);
 		add(damage);
+		SetPlayer();
+		
+		FlxG.camera.setBounds(256, 0, tiledLevel.fullWidth-256, tiledLevel.fullHeight, true);
+		FlxG.camera.follow(player, FlxCamera.STYLE_PLATFORMER);
+		FlxG.camera.fade(FlxColor.BLACK, 1, true);
 	}
 	
 	/**
@@ -198,7 +205,22 @@ class PlayState extends FlxState
 	
 	function TouchDoor(obj1:FlxSprite, obj2:FlxSprite) 
 	{
-
+		if (obj2 == validDoor && (coinsGot >= 5 || (indexStage == 2 && coinsGot >= 4) || (indexStage == 3 && coinsGot >= 1))
+		{
+			CleanLevel();
+			indexStage++;
+			if (indexStage == 3 && coinsGot >= 5) FlxG.switchState(new TotemState);
+			BuildLevel();
+		}
+	}
+	
+	function CleanLevel()
+	{
+		progress.animation.frameIndex = 0;
+		remove(items);
+		remove(doors);
+		remove(damage);
+		remove(player);
 	}
 	
 	function TouchDamage(obj1:FlxSprite, obj2:FlxSprite)
@@ -212,6 +234,11 @@ class PlayState extends FlxState
 			player.velocity.x = 0;
 			player.animation.frameIndex = 1;
 			trace('die2');
+			
+			if (indexStage != 3)
+			{
+				CleanLevel(); BuildLevel();
+			}
 		}
 	}
 	
@@ -219,6 +246,8 @@ class PlayState extends FlxState
 	{
 		if (FlxG.pixelPerfectOverlap(obj1, obj2)) {
 			remove(items.remove(obj2, true));
+			coinsGot++;
+			if (((indexStage == 2 || indexStage == 3) && coinsGot == 5) || indexStage == 5) secretSound.play();
 			diamondSound.play();
 		}
 		trace(items.countDead(), items.countLiving());
