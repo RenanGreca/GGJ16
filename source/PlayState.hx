@@ -8,9 +8,11 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.ui.FlxButton;
+import flixel.util.FlxColor;
 import flixel.util.FlxMath;
 import haxe.io.Path;
 import openfl.Assets;
@@ -27,6 +29,9 @@ class PlayState extends FlxState
 	var walls:FlxTilemap;
 
 	var player:Player;
+	var items:FlxGroup;
+	
+	var tiledLevel:TiledMap ;
 	
 	//private var _map:FlxOgmoLoader;
 	//private var _mWalls:FlxTilemap;
@@ -46,7 +51,7 @@ class PlayState extends FlxState
 		
 		FlxG.mouse.visible = false;
 		
-		var tiledLevel:TiledMap = new TiledMap("assets/data/tilemap/ggj.tmx");
+		tiledLevel = new TiledMap("assets/data/tilemap/ggj.tmx");
 		
 		for (layer in tiledLevel.layers)
 		{
@@ -67,14 +72,8 @@ class PlayState extends FlxState
 			}
 		}
 		
-		trace(tiledLevel.properties);
-		for (group in tiledLevel.objectGroups)
-		{
-			for (o in group.objects)
-			{
-			}
-		}
-
+		BuildLevel();
+		
 		//_map = new FlxOgmoLoader(AssetPaths.UnsavedLevel__oel);
 		//_mWalls = _map.loadTilemap(AssetPaths.tileset__png, 64, 64, "Walls");
 		//_mWalls.setTileProperties(1, FlxObject.NONE);
@@ -87,6 +86,34 @@ class PlayState extends FlxState
 		//FlxG.camera.setBounds(256, 0, 768, 640);
 		FlxG.camera.follow(player, FlxCamera.STYLE_PLATFORMER);
 		super.create();
+	}
+	
+	function BuildLevel() 
+	{
+		items = new FlxGroup();
+		trace(tiledLevel.properties);
+		//tra
+		for (group in tiledLevel.objectGroups)
+		{
+			for (o in group.objects)
+			{
+				switch (o.name.toLowerCase())
+				{
+					case "item":
+						trace(o.name, o.x, o.y);
+						var item:FlxSprite = new FlxSprite(o.x, o.y);
+						item.loadGraphic(AssetPaths.diamante__png, true, 64, 64);
+						item.animation.add('shine', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32], 8, true);
+						item.animation.play('shine');
+						items.add(item);
+						add(item);
+						
+					case "spikes":
+						trace("spikes");
+				}
+			}
+		}
+		//add(items);
 	}
 	
 	/**
@@ -103,7 +130,7 @@ class PlayState extends FlxState
 	 */
 	override public function update():Void
 	{
-		trace(player.x, player.y);
+		//trace(player.x, player.y);
 		if (player.x < 210) FlxG.camera.setBounds(0, 0, 1024, 640, true);
 		if (FlxG.keys.pressed.C) {
 			player.x = 610;
@@ -112,6 +139,12 @@ class PlayState extends FlxState
 
 		super.update();
 		FlxG.collide(player, walls);
-		//FlxG.collide(player, _mWalls);
+		FlxG.overlap(player, items, TouchItem);
 	}	
+	
+	function TouchItem(obj1:FlxSprite, obj2:FlxSprite) 
+	{
+		remove(items.remove(obj2, true));
+		trace(items.countDead(), items.countLiving());
+	}
 }
