@@ -77,12 +77,12 @@
   <properties>
    <property name="type" value="item"/>
   </properties>
-  <object id="2" name="Item" x="512" y="128"/>
-  <object id="3" name="Item" x="384" y="128"/>
+  <object id="2" name="Item" x="512" y="130.666"/>
+  <object id="3" name="Item" x="386.667" y="128"/>
   <object id="4" name="Item" x="637.334" y="322.666"/>
-  <object id="5" name="Item" x="640" y="512"/>
-  <object id="6" name="Item" x="512" y="512"/>
-  <object id="7" name="Item" x="128" y="128"/>
+  <object id="5" name="Item" x="642.667" y="514.666"/>
+  <object id="6" name="Item" x="512" y="509.333"/>
+  <object id="7" name="Item" x="128" y="133.333"/>
  </objectgroup>
  <objectgroup name="Spikes"/>
  <objectgroup name="Doors">
