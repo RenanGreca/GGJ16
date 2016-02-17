@@ -27,8 +27,7 @@ class MenuState extends FlxState
 	override public function create():Void
 	{
 		FlxG.mouse.visible = false;
-
-		cutscenes = [AssetPaths.cutscene__png, AssetPaths.cutscene2__png];
+		cutscenes = [AssetPaths.cutscene1__jpg, AssetPaths.cutscene2__png, AssetPaths.cutscene3__png];
 		
 		super.create();
 		
@@ -37,7 +36,7 @@ class MenuState extends FlxState
 	
 	function PlayCutscene() 
 	{
-		trace('play');
+		trace('play: ' + cutscenes[cutNum]);
 		var cutscene:FlxSprite = new FlxSprite(0, 0);
 		cutscene.loadGraphic(cutscenes[cutNum]);
 		cutscene.y += (FlxG.camera.height - cutscene.height) * .5;

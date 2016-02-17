@@ -70,6 +70,8 @@ class PlayState extends FlxState
 	var info5:StageInfo = new StageInfo([1, 2, 3, 4, 5], 1, true);
 	var info6:StageInfo = new StageInfo([1, 2, 3, 5, 6], 3, true);
 	
+	var tilesheetPath:String = "assets/data/tileset.png";
+	
 	function new(indexStage:Int = 0, coinsTotal:Int = 0)
 	{
 		super();
@@ -90,13 +92,10 @@ class PlayState extends FlxState
 		diamondSound = FlxG.sound.load(AssetPaths.diamond__wav);
 		secretSound = FlxG.sound.load(AssetPaths.secret__wav);
 		
-		tiledLevel = new TiledMap("assets/data/tilemap/ggj.tmx");
-		
+		tiledLevel = new TiledMap("assets/data/ggj.tmx");
 		for (layer in tiledLevel.layers)
 		{
-			
 			var layerData:String = layer.csvData;
-			var tilesheetPath:String = "assets/data/tilemap/tileset.png";
 			
 			var level:FlxTilemap = new FlxTilemap();
 			
@@ -108,6 +107,8 @@ class PlayState extends FlxState
 				walls = level;
 			}
 		}
+		
+		trace(tiledLevel.tileWidth, tiledLevel.tileHeight);
 		
 		player = new Player(0,0);
 		BuildLevel();

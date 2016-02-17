@@ -35,7 +35,7 @@ class Ending extends FlxState
 	{
 		FlxG.mouse.visible = false;
 		
-		if (coinsTotal >= 30) cutscenes = [AssetPaths.end2__png];
+		if (coinsTotal >= 30) cutscenes = [AssetPaths.end2__jpg, AssetPaths.end3__png];
 		else cutscenes = [AssetPaths.end1__png];
 		cutscenes.push(AssetPaths.credits__png);
 		
